@@ -2,11 +2,11 @@ package gopool
 
 // Job 工作
 type Job struct {
-	f func() error
+	f func()
 }
 
 // NewJob 新工作
-func NewJob(f func() error) *Job {
+func NewJob(f func()) *Job {
 	if f == nil {
 		return nil
 	}
@@ -18,8 +18,5 @@ func NewJob(f func() error) *Job {
 
 // Execute 开始工作
 func (j *Job) Execute() {
-	err := j.f()
-	if err != nil {
-		// todo something
-	}
+	j.f()
 }

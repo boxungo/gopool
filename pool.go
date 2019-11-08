@@ -4,16 +4,22 @@ import "sync"
 
 // Pool 池
 type Pool struct {
-	maxWorkers int
+	maxWorkers uint
+	maxJobs    uint
 	jobChan    chan *Job
 	wg         sync.WaitGroup
 }
 
 // NewPool 新池
-func NewPool(maxWorkers, maxJobs int) *Pool {
+// maxJobs 如果 > 0, 在队列中还有任务未执行完时终止程序会丢数据
+func NewPool(opt Option) *Pool {
+	if opt.MaxWorkers <= 0 {
+		opt.MaxWorkers = 1
+	}
 	pool := &Pool{
-		maxWorkers: maxWorkers,
-		jobChan:    make(chan *Job, maxJobs),
+		maxWorkers: opt.MaxWorkers,
+		maxJobs:    opt.MaxJobs,
+		jobChan:    make(chan *Job, opt.MaxJobs),
 	}
 
 	go pool.start()
@@ -30,7 +36,7 @@ func (p *Pool) Submit(job *Job) {
 
 // start 池子开启
 func (p *Pool) start() {
-	for i := 0; i < p.maxWorkers; i++ {
+	for i := 0; i < int(p.maxWorkers); i++ {
 		worker := NewWorker(p.jobChan)
 		go worker.Start()
 	}

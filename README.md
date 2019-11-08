@@ -2,7 +2,7 @@
 
 ## 结构
 
-```
+```txt
                          ┌ Worker
                          ├ ...
 Task --> Job Channel --> ├ Worker
